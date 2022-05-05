@@ -1,5 +1,7 @@
 package com.github.jjugccc2021spring.service;
 
+import static java.lang.Math.max;
+
 import com.github.jjugccc2021spring.bean.Sales;
 import com.github.jjugccc2021spring.code.ShippingSize;
 
@@ -21,15 +23,23 @@ public class SalesService {
     sales.profit = price;
 
     // 手数料計算
-    feeCalculate(sales);
+    int fee = feeCalculate(sales);
 
     // 配送料計算
-    deliveryFeeCalculate(sales, shippingSize);
+    int deliveryFee = deliveryFeeCalculate(sales, shippingSize);
+
+    // 配送料が300円以上なら手数料から100円割引
+    if (deliveryFee >= 300) {
+      fee = max(fee - 100, 100);
+    }
+    sales.fee = fee;
+    sales.deliveryFee = deliveryFee;
+    sales.profit = price - fee - deliveryFee;
 
     return sales;
   }
 
-  private void feeCalculate(Sales sales) {
+  private int feeCalculate(Sales sales) {
     int rate;
     if (sales.price < 5_000) {
       rate = 20;
@@ -38,24 +48,14 @@ public class SalesService {
     } else {
       rate = 5;
     }
-    int fee = sales.price * rate / 100;
-    sales.fee = fee;
-    sales.profit = sales.profit - fee;
+    return sales.price * rate / 100;
   }
 
-  private void deliveryFeeCalculate(Sales sales, ShippingSize shippingSize) {
-    int deliveryFee =
-        switch (shippingSize) {
-          case SMALL -> 100;
-          case MEDIUM -> 200;
-          case LARGE -> 300;
-        };
-    // 配送料が300円以上なら手数料から100円割引
-    if (deliveryFee >= 300) {
-      sales.fee -= 100;
-      sales.profit += 100;
-    }
-    sales.deliveryFee = deliveryFee;
-    sales.profit = sales.profit - deliveryFee;
+  private int deliveryFeeCalculate(Sales sales, ShippingSize shippingSize) {
+    return switch (shippingSize) {
+      case SMALL -> 100;
+      case MEDIUM -> 200;
+      case LARGE -> 300;
+    };
   }
 }
