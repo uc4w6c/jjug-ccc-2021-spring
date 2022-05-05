@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.6.7'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'com.diffplug.spotless' version '6.5.1'
 }
 
 group = 'com.github'
@@ -19,4 +20,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		googleJavaFormat('1.15.0')
+	}
 }
