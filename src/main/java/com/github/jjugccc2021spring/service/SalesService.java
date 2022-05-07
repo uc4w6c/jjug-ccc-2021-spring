@@ -20,13 +20,12 @@ public class SalesService {
     }
     Sales sales = new Sales();
     sales.price = price;
-    sales.profit = price;
 
     // 手数料計算
-    int fee = feeCalculate(sales);
+    int fee = feeCalculate(sales.price);
 
     // 配送料計算
-    int deliveryFee = deliveryFeeCalculate(sales, shippingSize);
+    int deliveryFee = deliveryFeeCalculate(shippingSize);
 
     // 配送料が300円以上なら手数料から100円割引
     if (deliveryFee >= 300) {
@@ -39,19 +38,19 @@ public class SalesService {
     return sales;
   }
 
-  private int feeCalculate(Sales sales) {
+  private int feeCalculate(int price) {
     int rate;
-    if (sales.price < 5_000) {
+    if (price < 5_000) {
       rate = 20;
-    } else if (sales.price < 10_000) {
+    } else if (price < 10_000) {
       rate = 10;
     } else {
       rate = 5;
     }
-    return sales.price * rate / 100;
+    return price * rate / 100;
   }
 
-  private int deliveryFeeCalculate(Sales sales, ShippingSize shippingSize) {
+  private int deliveryFeeCalculate(ShippingSize shippingSize) {
     return switch (shippingSize) {
       case SMALL -> 100;
       case MEDIUM -> 200;
